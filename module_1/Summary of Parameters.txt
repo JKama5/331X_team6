@@ -1,0 +1,14 @@
+Summary of Parameters:
+
+## SDR variables (user defined)
+
+Carrier frequency: 433.9 MHz
+Time duration (how long we collect samples for): 30 seconds
+Sampling frequency: 521 kHz
+Bandwidth = one fourth the carrier frequency (this value could be much lower).
+Buffer size = 2^15 samples
+
+
+## Spectrogram Variables
+FFT slice size = 1024
+overlap size = 128
