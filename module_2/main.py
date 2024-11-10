@@ -17,7 +17,7 @@ t = np.arange(0, len(samples)*T, T) # time vector
 
 Real = np.real(samples)
 Imag = np.imag(samples)
-sR = abs(samples)
+R = abs(samples)
 phase = np.atan2(Real,Imag)
 
 
