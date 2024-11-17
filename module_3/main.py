@@ -8,6 +8,7 @@ import adi
 import math
 import findingOptimalRates
 import time
+import matplotlib.animation as animation
 
 ## Defining parameters
 sampling_freq = 521000 
@@ -28,6 +29,9 @@ signalSamples = isolate_signal.isolateSignal(file, sampling_freq, threshhold_abs
 
 ## Find the frequency offset
 freq_offset = find_offset.findOffset(signalSamples, sampling_freq, carrier_freq, 2, len(signalSamples), 0)
+
+t = np.arange(0, T*len(signalSamples), T) # create time vector
+# samples = signalSamples * np.exp(-1j*2*np.pi*freq_offset*t)
 
 
 
@@ -78,13 +82,14 @@ np.save('pluto_samples_corrected.npy', data)
 
 time.sleep(2)
 
-plt.specgram(data, Fs = sampling_freq, NFFT=slice_size, noverlap=overlap_size, Fc=carrier_freq+int(freq_offset))
-plt.title('Spectrogram of RF on '+ str((carrier_freq+int(freq_offset))/1000000.0) + "MHz band")
-plt.ylabel('Frequency [Hz]')
-plt.xlabel('Time [sec]')
-plt.show()
 
-samples = isolate_signal.isolateSignal("pluto_samples_corrected.npy", sampling_freq, 20)
+# plt.specgram(data, Fs = sampling_freq, NFFT=slice_size, noverlap=overlap_size, Fc=carrier_freq+int(freq_offset))
+# plt.title('Spectrogram of RF on '+ str((carrier_freq+int(freq_offset))/1000000.0) + "MHz band")
+# plt.ylabel('Frequency [Hz]')
+# plt.xlabel('Time [sec]')
+# plt.show()
+
+samples = isolate_signal.isolateSignal("pluto_samples_corrected.npy", sampling_freq, 40)
 t = np.arange(0, len(samples)*T, T) # time vector
 
 Real = np.real(samples)
