@@ -57,13 +57,12 @@ def findOffset(samples, Fs, Fc, modulation_order, NFFT, Noverlap):
            
         actual_center_freq = freq[center_bin]
         freq_offset = actual_center_freq - bin_to_freq_offset
-        print(freq_offset)
         freq_offset_per_slice.append(freq_offset)
     
     average_freq_offset = sum(freq_offset_per_slice)/len(freq_offset_per_slice)
     print("Frequency offset:", average_freq_offset)
 
-    return average_freq_offset
+    return int(average_freq_offset)
             
            
     
@@ -73,7 +72,7 @@ def findOffset(samples, Fs, Fc, modulation_order, NFFT, Noverlap):
 # slice_size = 1024
 # overlap_size = 128
 # import isolate_signal
-# file = 'module_2/pluto_samples.npy' 
+# file = 'pluto_samples.npy' 
 # samples = np.load(file)
 # signalSamples = isolate_signal.isolateSignal(file, sampling_freq, 100)
 
@@ -167,4 +166,4 @@ def findOffset(samples, Fs, Fc, modulation_order, NFFT, Noverlap):
 # test_samples_with_offset = x_array_reconstruct_yes_offset + 1j*y_array_reconstruct_yes_offset
 # test_samples = x_array_reconstruct_no_offset + 1j*y_array_reconstruct_no_offset
 
-# findOffset(test_samples_with_offset, 1000, 100, 4, len(test_samples_with_offset), 0)
+# findOffset(signalSamples, sampling_freq, carrier_freq, 1, len(signalSamples), 0)
