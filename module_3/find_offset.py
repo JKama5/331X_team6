@@ -4,17 +4,26 @@ from scipy import signal
 import matplotlib.pyplot as plt
 
 
+# ----------------------------------------------------------
+# Measuring frequency offset with FFT. (ECE331X Module 3)
+#
+# 11-18-2024
+# Octavio Bittar (orbittar@wpi.edu)
+# Jack Kamataris (jakamataris@wpi.edu)
+# ----------------------------------------------------------
 
+
+# Returns the average frequency offset in Hz. Used for coarse frequency correction.
 def findOffset(samples, Fs, Fc, modulation_order, NFFT, Noverlap):
 
-    # Raise signal to modulation order.
+    # Raise signal to modulation order. (M=1 for OOK)
     samples = samples**modulation_order
     
     # Calculate number of windows to be processed
     num_slices = int((len(samples) - (Noverlap/2)) // (NFFT - (Noverlap/2)))
     
     #Iterate through all the FFT windows
-    freq_offset_per_slice = []
+    raw_freq_offset_per_slice = []
 
     for i in range(num_slices):
         start_index = i*(int(NFFT - (Noverlap/2)))
@@ -24,7 +33,7 @@ def findOffset(samples, Fs, Fc, modulation_order, NFFT, Noverlap):
         freq = None
         bin_to_freq_offset = 0
 
-        # Handling conversion from bin to frequnecy when the carrier frequency is larger than the sampling rate.
+        # Handling conversion from bin to frequency when the carrier frequency is larger than the sampling rate.
         if Fc >= Fs/2/modulation_order:
             bin_to_freq_offset = Fc
 
@@ -54,19 +63,26 @@ def findOffset(samples, Fs, Fc, modulation_order, NFFT, Noverlap):
             print("ERROR: center frequency not found.")
             sys.exit(0)
 
-           
         actual_center_freq = freq[center_bin]
-        freq_offset = actual_center_freq - bin_to_freq_offset
-        freq_offset_per_slice.append(freq_offset)
+        freq_offset = int(actual_center_freq - bin_to_freq_offset)
+        raw_freq_offset_per_slice.append(freq_offset)
     
-    average_freq_offset = sum(freq_offset_per_slice)/len(freq_offset_per_slice)
-    print("Frequency offset:", average_freq_offset)
+    raw_average_freq_offset = int(sum(raw_freq_offset_per_slice)/len(raw_freq_offset_per_slice))
+    
+    # Remove "junk" slices
+    filtered_freq_offset_per_slice = []
+    for i in range(len(raw_freq_offset_per_slice)):
+        if raw_freq_offset_per_slice[i] > raw_average_freq_offset/2 and raw_freq_offset_per_slice[i] < raw_average_freq_offset*2:
+            print(raw_freq_offset_per_slice[i])
+            filtered_freq_offset_per_slice.append(raw_freq_offset_per_slice[i])
+    
+    filtered_average_freq_offset = int(sum(filtered_freq_offset_per_slice)/len(filtered_freq_offset_per_slice))
+    
+    print("Frequency offset:", filtered_average_freq_offset)
 
-    return int(average_freq_offset)
+    return filtered_average_freq_offset
             
            
-    
-    
 # sampling_freq = 521000 
 # carrier_freq = 433900000
 # slice_size = 1024

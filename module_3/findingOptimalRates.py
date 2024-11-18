@@ -6,13 +6,21 @@ import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
 
+# ----------------------------------------------------------
+# Receiving continuous samples data from Pluto SDR
+#
+# 11-18-2024
+# Octavio Bittar (orbittar@wpi.edu)
+# Jack Kamataris (jakamataris@wpi.edu)
+# ----------------------------------------------------------
+
 
 #-------------------------------------------------------------------------------------------------------------
 # Methods
 #-------------------------------------------------------------------------------------------------------------
 
 ## Returns a number of samples based on the parameter variables.
-def recieveSamples(num_samples, buffer_size, sdr, sampling_freq):
+def receiveSamples(num_samples, buffer_size, sdr, sampling_freq):
 
     if num_samples % buffer_size != 0:
         print("num_samples is not divisible by buffer_size!")

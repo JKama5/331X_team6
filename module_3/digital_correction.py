@@ -8,14 +8,15 @@ import isolate_signal
 import findingOptimalRates
 import matplotlib.pyplot as plt
 
-# -----------------------------------------------------------
-# Coarse frequency correction (ECE331X Module 3). 
-# Finds the offset, then adjusts LO and collects new samples.
-#
+# ----------------------------------------------------------
+# Coarse frequency correction (ECE331X Module 3).
+# This version digitally corrects the signal, instead of
+# changing the LO and collecting new samples.
+# 
 # 11-18-2024
 # Octavio Bittar (orbittar@wpi.edu)
 # Jack Kamataris (jakamataris@wpi.edu)
-# -----------------------------------------------------------
+# ----------------------------------------------------------
 
 # Connect to Pluto SDR
 try:
@@ -76,18 +77,11 @@ plt.show()
 # Find the frequency offset
 freq_offset = find_offset.findOffset(isolated_raw_signal, sampling_freq, carrier_freq, 1, 1024, 128) # See find_offset.py
 
-# Adjusting LO to compensate for offset
-sdr.rx_lo = int(carrier_freq + freq_offset)
+# Mathematically correct the signal on the pre-existing samples.
+t = np.arange(0, T*len(raw_samples), T) # create time vector
+corrected_samples = raw_samples * np.exp(-1j*2*np.pi*freq_offset*t) # Not working correctly?
 
-#-------------------------------------------------------------------------------------------------------------
-# Sample collection (with frequency compensation)
-#-------------------------------------------------------------------------------------------------------------
-# corrected_samples = findingOptimalRates.receiveSamples(num_samples, buffer_size, sdr, sampling_freq) # See findingOptimalRates.py
-# np.save('module_3_samples/corrected_samples.npy', corrected_samples)
-corrected_samples = np.load("module_3_samples/corrected_samples.npy")
-
-# Isolate the blip from 30 seconds of samples:
-isolated_corrected_signal = isolate_signal.isolateSignal(corrected_samples, sampling_freq) # See isolate_signal.py
+isolated_corrected_signal = isolate_signal.isolateSignal(corrected_samples, sampling_freq)
 
 plt.figure(1)
 plt.specgram(corrected_samples, Fs = sampling_freq, NFFT=slice_size, noverlap=overlap_size, Fc=carrier_freq+freq_offset)
@@ -96,11 +90,12 @@ plt.ylabel('Frequency [Hz]')
 plt.xlabel('Time [sec]')
 plt.show()
 
+sys.exit(0)
+
 #-------------------------------------------------------------------------------------------------------------
 # Corrected data visualization
 #-------------------------------------------------------------------------------------------------------------
 t = np.arange(0, T*len(isolated_corrected_signal), T) # create time vector
-
 Real = np.real(isolated_corrected_signal)
 Imag = np.imag(isolated_corrected_signal)
 R = abs(isolated_corrected_signal)
