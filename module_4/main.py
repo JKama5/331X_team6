@@ -16,11 +16,11 @@ import matplotlib.pyplot as plt
 # -----------------------------------------------------------
 
 # Connect to Pluto SDR
-try:
-    sdr = adi.Pluto("ip:192.168.2.1")
-except:
-    print("No Pluto Radio device found!")
-    # sys.exit(0)
+# try:
+#     sdr = adi.Pluto("ip:192.168.2.1")
+# except:
+#     print("No Pluto Radio device found!")
+#     sys.exit(0)
 
 #-------------------------------------------------------------------------------------------------------------
 # Variables
@@ -62,12 +62,12 @@ uncorrected_samples = np.load("module_4_samples/uncorrected_samples.npy")
 # Plotting original data
 t = np.arange(0, T*len(uncorrected_samples), T) # create time vector
 
-plt.figure("Spectrogram")
-plt.specgram(uncorrected_samples, Fs = sampling_freq, NFFT=slice_size, noverlap=overlap_size, Fc=carrier_freq)
-plt.title('Spectrogram of RF on '+ str((carrier_freq)/1e9) + "GHz band")
-plt.ylabel('Frequency [Hz]')
-plt.xlabel('Time [sec]')
-plt.show()
+# plt.figure("Spectrogram (Uncorrected)")
+# plt.specgram(uncorrected_samples, Fs = sampling_freq, NFFT=slice_size, noverlap=overlap_size, Fc=carrier_freq)
+# plt.title('Spectrogram of RF on '+ str((carrier_freq)/1e9) + "GHz band")
+# plt.ylabel('Frequency [Hz]')
+# plt.xlabel('Time [sec]')
+# plt.show()
 
 Real = np.real(uncorrected_samples)
 Imag = np.imag(uncorrected_samples)
@@ -76,7 +76,7 @@ phase = np.atan2(Real,Imag)
 
 
 # ## Plot amplitude over time:
-# plt.figure("Amplitude Plot")
+# plt.figure("Amplitude Plot (Uncorrected)")
 # plt.plot(t, R)
 # plt.title("Amplitude Plot of the Signal")
 # plt.xlabel('Time [sec]')
@@ -84,7 +84,7 @@ phase = np.atan2(Real,Imag)
 # plt.show()
 
 # ## Plot phase over time:
-# plt.figure("Phase Plot")
+# plt.figure("Phase Plot (Uncorrected)")
 # plt.plot(t, phase)
 # plt.title("Phase Plot of the Signal")
 # plt.xlabel('Time [sec]')
@@ -92,7 +92,7 @@ phase = np.atan2(Real,Imag)
 # plt.show()
 
 ## Plot IQ data:
-# plt.figure("Signal Constellation Plot")
+# plt.figure("Signal Constellation Plot (Uncorrected)")
 # plt.scatter(Real, Imag, linewidths=0.3)
 # plt.title("Signal Constellation of the Signal")
 # plt.xlabel('I')
@@ -103,7 +103,7 @@ phase = np.atan2(Real,Imag)
 # Fine Frequency Correction (PLL)
 #-------------------------------------------------------------------------------------------------------------
 
-corrected_samples = pll.fineFrequencyCorrection(uncorrected_samples)
+corrected_samples = pll.fineFrequencyCorrection(uncorrected_samples[0:100000])
 
 
 Real = np.real(corrected_samples)
@@ -113,9 +113,10 @@ phase = np.atan2(Real,Imag)
 
 
 ## Plot IQ data:
-plt.figure("Signal Constellation Plot")
+plt.figure("Signal Constellation Plot (Corrected)")
 plt.scatter(Real, Imag, linewidths=0.3)
 plt.title("Signal Constellation of the Signal")
 plt.xlabel('I')
 plt.ylabel('Q')
 plt.show()
+
